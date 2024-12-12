@@ -1,15 +1,12 @@
-package com.example.aim.domain.entity;
+package com.example.aim.security.domain;
 
-import com.example.aim.shared.base.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.Getter;
 
 import java.math.BigDecimal;
 
 @Entity
-@Getter
 @Table(name = "Securities")
-public class SecurityEntity extends BaseTimeEntity {
+public class SecurityEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,4 +20,5 @@ public class SecurityEntity extends BaseTimeEntity {
 
     @Column(nullable = false, precision = 18, scale = 2)
     private BigDecimal price;
+
 }
