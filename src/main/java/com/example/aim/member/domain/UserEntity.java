@@ -1,14 +1,17 @@
-package com.example.aim.domain.entity;
+package com.example.aim.member.domain;
 
 import com.example.aim.shared.base.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 
 import java.math.BigDecimal;
 
 @Entity
 @Getter
 @Table(name = "Users")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserEntity extends BaseTimeEntity{
 
     @Id
@@ -22,5 +25,6 @@ public class UserEntity extends BaseTimeEntity{
     private String passwordHash;
 
     @Column(nullable = false, precision = 18, scale = 2)
+    @Builder.Default
     private BigDecimal balance = BigDecimal.ZERO;
 }

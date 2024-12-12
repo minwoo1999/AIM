@@ -1,4 +1,4 @@
-package com.example.aim.domain;
+package com.example.aim.transcation.domain;
 
 public enum TransactionType {
     DEPOSIT, WITHDRAW

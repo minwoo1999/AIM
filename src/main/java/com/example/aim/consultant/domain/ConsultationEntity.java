@@ -1,16 +1,15 @@
-package com.example.aim.domain.entity;
+package com.example.aim.consultant.domain;
 
-import com.example.aim.domain.TransactionType;
+import com.example.aim.member.domain.UserEntity;
+import com.example.aim.portfolio.domain.PortfolioType;
 import com.example.aim.shared.base.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import java.math.BigDecimal;
-
 @Entity
-@Table(name = "Transactions")
 @Getter
-public class TransactionEntity extends BaseTimeEntity {
+@Table(name = "Consultations")
+public class ConsultationEntity extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,10 +21,7 @@ public class TransactionEntity extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
-    private TransactionType transactionType;
-
-    @Column(nullable = false, precision = 18, scale = 2)
-    private BigDecimal amount;
+    private PortfolioType portfolioType;
 
 
 

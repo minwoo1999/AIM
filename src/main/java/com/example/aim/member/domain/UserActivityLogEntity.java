@@ -1,14 +1,15 @@
-package com.example.aim.domain.entity;
+package com.example.aim.member.domain;
 
-import com.example.aim.domain.PortfolioType;
-import com.example.aim.shared.base.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Table(name = "Consultations")
-public class ConsultationEntity extends BaseTimeEntity {
+@Table(name = "UserActivityLogs")
+public class UserActivityLogEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,8 +21,11 @@ public class ConsultationEntity extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
-    private PortfolioType portfolioType;
+    private ActivityType activityType;
 
+    @Column(nullable = false, updatable = false)
+    @CreationTimestamp
+    private LocalDateTime activityTimestamp;
 
 
 }
