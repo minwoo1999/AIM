@@ -1,5 +1,7 @@
-package com.example.aim.domain.entity;
+package com.example.aim.portfolio.domain;
 
+import com.example.aim.consultant.domain.ConsultationEntity;
+import com.example.aim.security.domain.SecurityEntity;
 import com.example.aim.shared.base.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
