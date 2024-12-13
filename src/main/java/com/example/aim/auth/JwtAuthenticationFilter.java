@@ -4,12 +4,14 @@ import com.example.aim.auth.cookie.CookieUtil;
 import com.example.aim.member.application.MemberService;
 import com.example.aim.member.application.dto.request.MemberLoginRequestDto;
 import com.example.aim.member.application.dto.response.MemberResponseDto;
+import com.example.aim.member.domain.repository.MemberRepository;
 import com.example.aim.member.exception.error.UnAuthorizedException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +24,7 @@ import java.io.IOException;
 
 @Slf4j
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+
     private final JwtProvider jwtProvider;
 
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager,JwtProvider jwtProvider) {
@@ -58,13 +61,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         MemberDetails memberDetails = (MemberDetails) authResult.getPrincipal();
 
-        String accessToken = jwtProvider.generateAccessToken(memberDetails.getUsername());
-        String refreshToken = jwtProvider.generateRefreshToken(memberDetails.getUsername());
+        String accessToken = jwtProvider.generateAccessToken(memberDetails.getUsername(),authResult);
+        String refreshToken = jwtProvider.generateRefreshToken(memberDetails.getUsername(),authResult);
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_OK);
         CookieUtil.addCookie(response, "refreshToken", refreshToken, jwtProvider.REFRESH_TOKEN_EXPIRATION_TIME);
-
         response.getWriter().write(
                 new ObjectMapper().writeValueAsString(
                         MemberResponseDto.builder()

@@ -5,8 +5,16 @@ import com.auth0.jwt.algorithms.Algorithm;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
+import org.springframework.security.core.GrantedAuthority;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -21,23 +29,35 @@ public class JwtProvider {
     private final String HEADER_NAME = "Authorization";
     private final String TOKEN_PREFIX = "Bearer ";
 
-    public String generateAccessToken(String username) {
+    public String generateAccessToken(String username, Authentication authentication) {
+
+
+        List<String> roles = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
         return JWT.create()
                 .withSubject(username)
                 .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_TIME))
                 .withClaim("username", username)
+                .withClaim("ROLE",roles)
                 .sign(Algorithm.HMAC512(SECRET_KEY));
     }
-    public String generateRefreshToken(String username) {
+
+
+    public String generateRefreshToken(String username, Authentication authentication) {
+        List<String> roles = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+
         return JWT.create()
                 .withSubject(username)
                 .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_TIME))
                 .withClaim("username", username)
+                .withClaim("ROLE",roles)
                 .sign(Algorithm.HMAC512(SECRET_KEY));
     }
 
     public boolean verifyToken(String token) {
-        log.info("SECRET_KEY = " + SECRET_KEY);
         try {
             JWT.require(Algorithm.HMAC512(SECRET_KEY)).build().verify(token);
         } catch (Exception e) {
@@ -52,9 +72,8 @@ public class JwtProvider {
         return header;
     }
 
-    public String getUsername(HttpServletRequest request) {
+    public String getUserId(HttpServletRequest request) {
         String accessToken = getHeader(request).replace(TOKEN_PREFIX, "");
-
         return JWT.require(Algorithm.HMAC512(SECRET_KEY))
                 .build()
                 .verify(accessToken)
@@ -65,5 +84,39 @@ public class JwtProvider {
                 .build()
                 .verify(token)
                 .getClaim("username").asString();
+    }
+    public List<String> getRolesFromToken(String token) {
+        return JWT.require(Algorithm.HMAC512(SECRET_KEY))
+                .build()
+                .verify(token)
+                .getClaim("ROLE")
+                .asList(String.class);
+    }
+    public Authentication getAuthentication(String token) {
+        String username = getUsernameFromToken(token);
+        List<String> roles = getRolesFromToken(token);
+
+        List<SimpleGrantedAuthority> authorities = roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+
+        User principal = new User(username, "", authorities);
+
+        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+    }
+
+    public Authentication validateAndSetAuthentication(String refreshToken) {
+        Authentication authentication = this.getAuthentication(refreshToken);
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AuthenticationCredentialsNotFoundException("User not authenticated");
+        }
+
+        this.verifyToken(refreshToken);
+        return authentication;
+    }
+
+    public String renewRefreshToken(Authentication authentication) {
+        return this.generateRefreshToken(authentication.getName(), authentication);
     }
 }

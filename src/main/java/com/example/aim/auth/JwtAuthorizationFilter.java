@@ -9,10 +9,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import java.io.IOException;
+import java.util.Collection;
 
 @Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
@@ -29,7 +31,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         log.info("JwtAuthorizationFilter.doFilterInternal");
-        String path = request.getServletPath();
         String header = jwtProvider.getHeader(request);
         if (header == null) {
             chain.doFilter(request, response);
@@ -37,9 +38,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
 
         String username = null;
-        username = jwtProvider.getUsername(request);
+        username = jwtProvider.getUserId(request);
         if (username != null) {
-            UserEntity member = memberService.findByUsername(username).get();
+            UserEntity member = memberService.findMemberByUserId(username);
             MemberDetails memberDetails = new MemberDetails(member);
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(memberDetails, "", memberDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
