@@ -35,20 +35,42 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @PostMapping("/deposit")
-    public ResponseEntity<CommonResDto<?>> deposit(Principal principal, @RequestBody TransactionDepositRequestDto transactionDepositRequestDto) {
-        TransactionDepositResponseDto result = transactionService.deposit(principal.getName(), transactionDepositRequestDto.getAmount());
+    public ResponseEntity<CommonResDto<?>> deposit(@RequestBody TransactionDepositRequestDto transactionDepositRequestDto) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || !auth.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new CommonResDto<>(0, "인증되지 않은 사용자입니다.", null)
+            );
+        }
+        String username = auth.getName();
+        TransactionDepositResponseDto result = transactionService.deposit(username, transactionDepositRequestDto.getAmount());
         return ResponseEntity.ok(new CommonResDto<>(1, "입금 성공", result));
     }
 
     @PostMapping("/withdraw")
-    public ResponseEntity<CommonResDto<?>> withdraw(Principal principal, @RequestBody TransactionWithdrawResponseDto transactionWithdrawResponseDto) {
-        TransactionWithdrawResponseDto result = transactionService.withdraw(principal.getName(), transactionWithdrawResponseDto.getAmount());
+    public ResponseEntity<CommonResDto<?>> withdraw(@RequestBody TransactionWithdrawResponseDto transactionWithdrawResponseDto) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new CommonResDto<>(0, "인증되지 않은 사용자입니다.", null)
+            );
+        }
+        String username = auth.getName();
+        TransactionWithdrawResponseDto result = transactionService.withdraw(username, transactionWithdrawResponseDto.getAmount());
         return ResponseEntity.ok(new CommonResDto<>(1, "출금 성공", result));
     }
 
     @GetMapping("/history")
-    public ResponseEntity<CommonResDto<?>> getTransactionHistory(Principal principal) {
-        List<TransactionHistoryListResponseDto> result = transactionService.getTransactionHistory(principal.getName());
+    public ResponseEntity<CommonResDto<?>> getTransactionHistory() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new CommonResDto<>(0, "인증되지 않은 사용자입니다.", null)
+            );
+        }
+        String username = auth.getName();
+        List<TransactionHistoryListResponseDto> result = transactionService.getTransactionHistory(username);
         return ResponseEntity.ok(new CommonResDto<>(1, "거래 내역 조회 성공", result));
     }
 

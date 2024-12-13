@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Service
@@ -73,6 +74,14 @@ public class MemberServiceImpl implements MemberService {
                 .build();
         userActivityLogRepository.save(userActivityLogEntity);
     }
+
+    @Override
+    public BigDecimal getBalance(String username) {
+        UserEntity user = memberRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+        return user.getBalance();
+    }
+
 
     @Override
     public UserEntity findMemberByUserId(String userId) {

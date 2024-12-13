@@ -13,10 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/api/v1/members")
@@ -44,6 +43,22 @@ public class MemberController {
         return new ResponseEntity<>(
                 new CommonResDto<>(1,"회원로그아웃성공",""),HttpStatus.OK
         );
+    }
+
+    @GetMapping("/balance")
+    public ResponseEntity<CommonResDto<?>> getBalance() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || !auth.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new CommonResDto<>(0, "인증되지 않은 사용자입니다.", null)
+            );
+        }
+
+        String username = auth.getName();
+        BigDecimal balance = memberService.getBalance(username);
+
+        return ResponseEntity.ok(new CommonResDto<>(1, "잔고 조회 성공", balance));
     }
 
 }
