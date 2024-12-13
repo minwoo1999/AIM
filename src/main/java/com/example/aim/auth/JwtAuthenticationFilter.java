@@ -27,9 +27,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     private final JwtProvider jwtProvider;
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager,JwtProvider jwtProvider) {
+    private final MemberService memberService;
+
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager,JwtProvider jwtProvider,MemberService memberService) {
         super(authenticationManager);
         this.jwtProvider = jwtProvider;
+        this.memberService = memberService;
         setFilterProcessesUrl("/api/v1/members/login");
     }
 
@@ -63,6 +66,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         String accessToken = jwtProvider.generateAccessToken(memberDetails.getUsername(),authResult);
         String refreshToken = jwtProvider.generateRefreshToken(memberDetails.getUsername(),authResult);
+
+        memberService.saveLoginHistory(memberDetails.getUsername());
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_OK);
