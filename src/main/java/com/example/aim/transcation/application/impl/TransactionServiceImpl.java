@@ -52,7 +52,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .build();
     }
 
-    public List<TransactionHistoryListResponseDto> getTransacti onHistory(String username) {
+    public List<TransactionHistoryListResponseDto> getTransactionHistory(String username) {
         UserEntity user = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
         List<TransactionEntity> transactions = transactionRepository.findByUser(user);
