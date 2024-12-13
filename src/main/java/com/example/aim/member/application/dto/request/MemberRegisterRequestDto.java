@@ -1,6 +1,7 @@
 package com.example.aim.member.application.dto.request;
 
 
+import com.example.aim.member.domain.MemberRole;
 import com.example.aim.member.domain.UserEntity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -27,6 +28,7 @@ public class MemberRegisterRequestDto {
         return UserEntity.builder()
                 .username(username)
                 .passwordHash(password)
+                .role(MemberRole.MEMBER)
                 .build();
     }
 }

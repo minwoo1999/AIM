@@ -9,4 +9,10 @@ public interface MemberService {
     Optional<UserEntity> findByUsername(String username);
 
     Boolean userRegister(MemberRegisterRequestDto memberRegisterRequestDto);
+
+    UserEntity findMemberByUserId(String userId);
+
+    void saveLoginHistory(String username);
+
+    void saveLogoutHistory(String username);
 }

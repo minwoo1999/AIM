@@ -27,4 +27,7 @@ public class UserEntity extends BaseTimeEntity{
     @Column(nullable = false, precision = 18, scale = 2)
     @Builder.Default
     private BigDecimal balance = BigDecimal.ZERO;
+
+    @Enumerated(EnumType.STRING)
+    private MemberRole role; // ADMIN 관리자 - MANAGER 운영자 - MEMBER 일반회원
 }

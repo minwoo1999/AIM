@@ -9,7 +9,7 @@ spring:
     password:
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         show_sql: true
@@ -17,3 +17,7 @@ spring:
         default_batch_fetch_size: 1000
       defer-datasource-initialization: true
       show-sql: true
+
+
+jwt:
+  secret_key: jwt_token_secret

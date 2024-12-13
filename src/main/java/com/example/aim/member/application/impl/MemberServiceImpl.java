@@ -2,12 +2,16 @@ package com.example.aim.member.application.impl;
 
 import com.example.aim.member.application.MemberService;
 import com.example.aim.member.application.dto.request.MemberRegisterRequestDto;
+import com.example.aim.member.domain.ActivityType;
+import com.example.aim.member.domain.UserActivityLogEntity;
 import com.example.aim.member.domain.UserEntity;
 import com.example.aim.member.domain.repository.MemberRepository;
+import com.example.aim.member.domain.repository.UserActivityLogRepository;
 import com.example.aim.member.exception.error.AlreadyCreatedMemberException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +27,8 @@ public class MemberServiceImpl implements MemberService {
 
 
     private final MemberRepository memberRepository;
+
+    private final UserActivityLogRepository userActivityLogRepository;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -46,9 +52,34 @@ public class MemberServiceImpl implements MemberService {
         return true;
     }
 
+    @Override
+    @Transactional
+    public void saveLoginHistory(String username) {
+        UserEntity userEntity = memberRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("해당 유저가 존재하지 않습니다"));
+        UserActivityLogEntity userActivityLogEntity = UserActivityLogEntity.builder()
+                .user(userEntity)
+                .activityType(ActivityType.LOGIN)
+                .build();
+
+        userActivityLogRepository.save(userActivityLogEntity);
+    }
+
+    @Transactional
+    public void saveLogoutHistory(String username) {
+        UserEntity userEntity = memberRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("해당 유저가 존재하지 않습니다"));
+        UserActivityLogEntity userActivityLogEntity = UserActivityLogEntity.builder()
+                .user(userEntity)
+                .activityType(ActivityType.LOGOUT)
+                .build();
+        userActivityLogRepository.save(userActivityLogEntity);
+    }
+
+    @Override
+    public UserEntity findMemberByUserId(String userId) {
+        return memberRepository.findByUsername(userId).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다"));
+    }
     private String passwordEncode(String password){
         return bCryptPasswordEncoder.encode(password);
     }
-
 
 }
