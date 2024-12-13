@@ -12,6 +12,27 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     /**
+     * 잘못된 요청인 경우
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    protected ResponseEntity<?> illegalArgumentException(IllegalArgumentException e) {
+        log.info("IllegalArgumentException");
+        ErrorCode errorCode = ErrorCode.UNAUTHORIZED_EXCEPTION;
+
+        ErrorResponse error = ErrorResponse.builder()
+                .code(errorCode.getCode())
+                .message(e.getMessage())
+                .build();
+
+        CommonResponse response = CommonResponse.builder()
+                .success(false)
+                .error(error)
+                .build();
+
+        return new ResponseEntity<>(response, errorCode.getStatus());
+    }
+
+    /**
      * 접근 권한이 없을 경우
      */
     @ExceptionHandler(UnAuthorizedException.class)

@@ -3,14 +3,19 @@ package com.example.aim.transcation.domain;
 import com.example.aim.member.domain.UserEntity;
 import com.example.aim.shared.base.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-// Transaction Entity
 @Entity
 @Getter
 @Table(name = "Transactions")
+@NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class TransactionEntity extends BaseTimeEntity {
 
     @Id
@@ -27,5 +32,7 @@ public class TransactionEntity extends BaseTimeEntity {
 
     @Column(nullable = false, precision = 18, scale = 2)
     private BigDecimal amount;
+
+
 
 }
