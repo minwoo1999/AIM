@@ -30,4 +30,16 @@ public class UserEntity extends BaseTimeEntity{
 
     @Enumerated(EnumType.STRING)
     private MemberRole role; // ADMIN 관리자 - MANAGER 운영자 - MEMBER 일반회원
+
+
+    public void deposit(BigDecimal amount) {
+        this.balance = this.balance.add(amount);
+    }
+
+    public void withdraw(BigDecimal amount) {
+        if (this.balance.compareTo(amount) < 0) {
+            throw new IllegalArgumentException("잔액이 부족합니다.");
+        }
+        this.balance = this.balance.subtract(amount);
+    }
 }
