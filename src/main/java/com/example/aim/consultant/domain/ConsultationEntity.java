@@ -4,10 +4,16 @@ import com.example.aim.member.domain.UserEntity;
 import com.example.aim.portfolio.domain.PortfolioType;
 import com.example.aim.shared.base.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@AllArgsConstructor
+@Builder
+@NoArgsConstructor
 @Table(name = "Consultations")
 public class ConsultationEntity extends BaseTimeEntity {
 
