@@ -6,7 +6,9 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
     UNAUTHORIZED_EXCEPTION(HttpStatus.UNAUTHORIZED, "REQ_001", "접근 권한이 없습니다."),
-    ALREADY_MEMBER_CREATED_EXCEPTION(HttpStatus.BAD_REQUEST, "REQ_002", "이미 계정이 생성되어 있습니다.");
+    ALREADY_MEMBER_CREATED_EXCEPTION(HttpStatus.BAD_REQUEST, "REQ_002", "이미 계정이 생성되어 있습니다."),
+    BUSINESS_EXCEPTION(HttpStatus.BAD_REQUEST, "REQ_003", "잔고가 부족합니다.");
+
 
 
 

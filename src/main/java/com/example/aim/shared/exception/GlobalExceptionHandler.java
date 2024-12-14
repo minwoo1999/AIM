@@ -1,5 +1,6 @@
 package com.example.aim.shared.exception;
 
+import com.example.aim.consultant.exception.error.BusinessException;
 import com.example.aim.member.exception.error.AlreadyCreatedMemberException;
 import com.example.aim.member.exception.error.UnAuthorizedException;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,29 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+
+    /**
+     * 잔고가 부족한 경우
+     */
+    @ExceptionHandler(BusinessException.class)
+    protected ResponseEntity<?> businessException(BusinessException e) {
+        log.info("businessException");
+        ErrorCode errorCode = ErrorCode.BUSINESS_EXCEPTION;
+
+        ErrorResponse error = ErrorResponse.builder()
+                .code(errorCode.getCode())
+                .message(e.getMessage())
+                .build();
+
+        CommonResponse response = CommonResponse.builder()
+                .success(false)
+                .error(error)
+                .build();
+
+        return new ResponseEntity<>(response, errorCode.getStatus());
+    }
+
 
     /**
      * 잘못된 요청인 경우
