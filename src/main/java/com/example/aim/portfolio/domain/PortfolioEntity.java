@@ -4,11 +4,15 @@ import com.example.aim.consultant.domain.ConsultationEntity;
 import com.example.aim.security.domain.SecurityEntity;
 import com.example.aim.shared.base.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Entity
 @Getter
 @Table(name = "Portfolios")
+@AllArgsConstructor
+@Builder
 public class PortfolioEntity extends BaseTimeEntity {
 
     @Id
